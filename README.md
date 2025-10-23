@@ -6,11 +6,11 @@
 
 ## What technologies are used for this project?
 
-```sh
 This project is built with:
+
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
-```
+
