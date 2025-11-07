@@ -3,10 +3,10 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const Location = () => {
   const regions = [
-    { name: "Sul", states: ["Rio Grande do Sul", "Santa Catarina", "Paraná"] },
-    { name: "Sudeste", states: ["São Paulo", "Rio de Janeiro", "Minas Gerais", "Espírito Santo"] },
-    { name: "Centro-Oeste", states: ["Goiás", "Mato Grosso", "Mato Grosso do Sul", "Distrito Federal"] },
-    { name: "Nordeste", states: ["Bahia", "Pernambuco", "Ceará", "Maranhão", "Paraíba"] },
+    { name: "Sul", states: ["Alto Parnaíba", "Balsas", "Carolina", "Estreito", "Porto Franco"] },
+    { name: "Sudeste", states: ["São Luís", "Imperatriz", "Santa Inês", "Bacabal", "Caxias"] },
+    { name: "Centro-Oeste", states: ["Açailândia", "Davinópolis", "Montes Altos", "Senador La Rocque"] },
+    { name: "Nordeste", states: ["Arari", "Araioses", "Chapadinha", "Codó", "Itapecuru Mirim"] },
     { name: "Norte", states: ["Amazonas", "Pará", "Tocantins"] },
   ];
 
@@ -19,7 +19,7 @@ const Location = () => {
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-8" />
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Atendemos hospitais e clínicas em todo o território nacional com entregas rápidas e seguras
+            Atendemos hospitais e clínicas em todo o território Maranhense com entregas rápidas e seguras
           </p>
         </div>
 
