@@ -41,27 +41,27 @@ const Contact = () => {
       },
       body: JSON.stringify(dataToSend),
     })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Sucesso:", data);
-      toast({
-        title: "Mensagem enviada!",
-        description: "Seus dados foram registrados. Entraremos em contato.",
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Sucesso:", data);
+        toast({
+          title: "Mensagem enviada!",
+          description: "Seus dados foram registrados. Entraremos em contato.",
+        });
+        // Limpa o formulário
+        setFormData({ name: "", email: "", phone: "", company: "", message: "" });
+      })
+      .catch((error) => {
+        console.error("Erro:", error);
+        toast({
+          title: "Erro ao enviar.",
+          description: "Por favor, tente novamente mais tarde.",
+          variant: "destructive",
+        });
+      })
+      .finally(() => {
+        setIsSending(false); // Reabilita o botão
       });
-      // Limpa o formulário
-      setFormData({ name: "", email: "", phone: "", company: "", message: "" });
-    })
-    .catch((error) => {
-      console.error("Erro:", error);
-      toast({
-        title: "Erro ao enviar.",
-        description: "Por favor, tente novamente mais tarde.",
-        variant: "destructive",
-      });
-    })
-    .finally(() => {
-      setIsSending(false); // Reabilita o botão
-    });
   };
 
   const contactInfo = [
@@ -75,14 +75,15 @@ const Contact = () => {
       icon: Mail,
       title: "Email",
       content: "contato@brasil-hosp.com",
-      link: "mailto:contato@brasil-hosp.com",
+      link: "https://mail.google.com/mail/u/0/?view=cm&fs=1&to=contato@brasil-hosp.com",
     },
     {
       icon: MapPin,
       title: "Endereço",
-      content: "São Luís, MA - Brasil",
-      // (Mantive o link que você tinha na imagem)
-      link: "https://maps.app.goo.gl/yNdxshDkrvF33Ffe9", 
+      // ⬇️ ATUALIZEI O CONTEÚDO COM O ENDEREÇO COMPLETO ⬇️
+      content: "Av. Ana Jansen, 1040 - São Francisco, São Luís - MA, 65076-730",
+      // ⬇️ ATUALIZEI O LINK PARA O MAPA EXATO ⬇️
+      link: "https://maps.google.com/?cid=5391612174080300890&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQ", 
     },
   ];
 
@@ -113,8 +114,11 @@ const Contact = () => {
                       <h3 className="font-bold text-foreground mb-2">{info.title}</h3>
                       <a
                         href={info.link}
-                        target="_blank" // Adicionado para abrir links em nova aba
-                        rel="noopener noreferrer" // Adicionado por segurança
+
+                        // A CORREÇÃO ESTÁ AQUI (info.link?.)
+                        target={info.link?.startsWith("http") ? "_blank" : "_self"}
+
+                        rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-primary transition-colors"
                       >
                         {info.content}
@@ -169,7 +173,7 @@ const Contact = () => {
                         required
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        placeholder="(11) 99999-9999"
+                        placeholder="(99) 99999-9999"
                       />
                     </div>
                     <div>
