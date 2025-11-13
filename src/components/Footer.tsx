@@ -118,6 +118,27 @@ const Footer = () => {
               ))}
             </div>
           </div>
+          {/* Assinatura dos Desenvolvedores */}
+          <p className="text-center text-xs text-primary-foreground/80 mt-6">
+            Desenvolvido por{" "}
+            <a
+              href="https://bryanmdev-portfolio.netlify.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary-foreground hover:underline"
+            >
+              Bryan M.
+            </a>
+            {" "}&{" "}
+            <a
+              href="URL_DO_PORTFOLIO"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary-foreground hover:underline"
+            >
+              Marcus F.
+            </a>
+          </p>
         </div>
       </div>
     </footer>
