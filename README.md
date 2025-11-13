@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: (https://brasil-hosp-showcase.vercel.app/)
+**URL**: (https://www.brasil-hosp.com)
 
 ## What technologies are used for this project?
 
