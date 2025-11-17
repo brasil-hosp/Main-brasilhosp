@@ -46,8 +46,14 @@ const Partners = () => {
         >
           {/* 3. Mapeamos os parceiros aqui dentro */}
           {partners.map((partner, index) => (
-            <div key={index} className="mx-8 w-48"> {/* Adiciona margem entre os logos */}
-              <Card className="border-0 shadow-lg bg-transparent">
+            <div key={index} className="mx-8 w-48 my-4 py-4"> {/* Adiciona margem entre os logos */}
+              {/* Código Reformulado para um Brilho Melhor */}
+{/* Código Reformulado para um Brilho Mais Bonito */}
+<Card className="
+  border border-transparent hover:border-secondary transition-all duration-300
+  shadow-lg hover:shadow-xl hover:shadow-secondary/50
+  bg-transparent
+">
                 <CardContent className="flex aspect-square items-center justify-center p-6">
                   {/* Este é o estilo original (grayscale) que você queria manter */}
                   <img
