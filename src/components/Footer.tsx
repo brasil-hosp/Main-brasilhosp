@@ -12,7 +12,6 @@ const Footer = () => {
     ],
     recursos: [
       { label: "Blog", href: "#" },
-      { label: "Catálogo", href: "/catalogo" },
       { label: "Certificações", href: "#" },
     ],
     legal: [
