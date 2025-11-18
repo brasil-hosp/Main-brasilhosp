@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Lgpd from "./pages/Lgpd"; // Importação da nova página
 
 const queryClient = new QueryClient();
 
@@ -16,7 +17,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          
+          {/* Agora essa rota vai funcionar porque o arquivo Lgpd.tsx está seguro */}
+          <Route path="/lgpd" element={<Lgpd />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
