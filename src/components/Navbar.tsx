@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom"; // 1. NOVOS IMPORTS
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // 2. HOOKS DE NAVEGAÇÃO
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,18 +19,33 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // 3. FUNÇÃO DE SCROLL INTELIGENTE
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setIsOpen(false);
+    // Se não estiver na Home, vai para ela primeiro
+    if (location.pathname !== "/") {
+      navigate("/");
+      // Pequeno delay para a Home carregar antes de rolar
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } else {
+      // Se já estiver na Home, comportamento normal
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
     }
+    setIsOpen(false);
   };
 
   const navLinks = [
     { id: "about", label: "Quem Somos" },
     { id: "services", label: "O Que Oferecemos" },
     { id: "why-us", label: "Por Que Nós" },
+    { id: "partners", label: "Parceiros" }, // Adicionei Parceiros caso queira no menu
     { id: "location", label: "Localização" },
     { id: "contact", label: "Contato" },
   ];
@@ -39,16 +59,16 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-        <button
-    onClick={() => scrollToSection("hero")}
-    className="hover:opacity-80 transition-opacity p-0"
->
-    <img 
-        src="/logo-brasil-hosp.png"  /* <-- MUDAMOS AQUI */
-        alt="Logo Brasil Hosp" 
-        className="h-16" /* (ou o tamanho que você preferir: h-10, h-12, etc.) */
-    />
-</button>
+          <button
+            onClick={() => scrollToSection("hero")}
+            className="hover:opacity-80 transition-opacity p-0"
+          >
+            <img 
+              src="/logo-brasil-hosp.png" 
+              alt="Logo Brasil Hosp" 
+              className="h-16" 
+            />
+          </button>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
@@ -81,7 +101,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-border animate-fade-in">
+          <div className="md:hidden py-4 border-t border-border animate-fade-in bg-background/95 backdrop-blur-md"> {/* Adicionei bg para garantir leitura no mobile */}
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <button

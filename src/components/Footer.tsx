@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"; // 1. Importamos o Link
 import { Facebook, Instagram, Linkedin, Mail, Phone } from "lucide-react";
 
 const Footer = () => {
@@ -5,9 +6,9 @@ const Footer = () => {
 
   const footerLinks = {
     empresa: [
-      { label: "Sobre Nós", href: "#about" },
-      { label: "Serviços", href: "#services" },
-      { label: "Localização", href: "#location" },
+      { label: "Sobre Nós", href: "/#about" },     // Ajustei para /# para funcionar da pag LGPD
+      { label: "Serviços", href: "/#services" },
+      { label: "Localização", href: "/#location" },
     ],
     recursos: [
       { label: "Blog", href: "#" },
@@ -15,9 +16,8 @@ const Footer = () => {
       { label: "Certificações", href: "#" },
     ],
     legal: [
-      { label: "Política de Privacidade", href: "#" },
+      { label: "Política de Privacidade & LGPD", href: "/lgpd" },
       { label: "Termos de Uso", href: "#" },
-      { label: "LGPD", href: "#" },
     ],
   };
 
@@ -31,9 +31,21 @@ const Footer = () => {
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
-          {/* Brand Column */}
+          
+          {/* Brand Column (Coluna da Marca) */}
           <div className="lg:col-span-2">
-            <h3 className="text-2xl font-bold mb-4">Brasil Hosp</h3>
+            
+            {/* 2. AQUI ESTÁ A MÁGICA: Link que leva para Home e sobe ao topo */}
+            <Link 
+              to="/" 
+              className="inline-block group"
+              onClick={() => window.scrollTo(0, 0)} // <--- ISSO FORÇA SUBIR AO TOPO
+            >
+              <h3 className="text-2xl font-bold mb-4 group-hover:opacity-80 transition-opacity">
+                Brasil Hosp
+              </h3>
+            </Link>
+
             <p className="text-primary-foreground/80 mb-6 leading-relaxed">
               Fornecendo soluções de excelência para o setor de saúde brasileiro há mais de 15 anos.
             </p>
@@ -42,9 +54,10 @@ const Footer = () => {
                 <Phone size={18} />
                 <span>(98) 3227-1116</span>
               </a>
-              <a href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=contato@brasil-hosp.com" className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+              {/* Link do E-mail corrigido */}
+              <a href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=contato@brasil-hosp.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors">
                 <Mail size={18} />
-                <span>contato@brasilhosp.com</span>
+                <span>contato@brasil-hosp.com</span>
               </a>
             </div>
           </div>
@@ -87,12 +100,23 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.legal.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href={link.href}
-                    className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    {link.label}
-                  </a>
+                   {/* Lógica para usar Link se for interno (/lgpd) */}
+                   {link.href.startsWith("/") ? (
+                    <Link
+                      to={link.href}
+                      onClick={() => window.scrollTo(0, 0)}
+                      className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -110,6 +134,8 @@ const Footer = () => {
                 <a
                   key={index}
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={social.label}
                   className="w-10 h-10 bg-primary-foreground/10 hover:bg-secondary rounded-full flex items-center justify-center transition-colors"
                 >
@@ -118,25 +144,26 @@ const Footer = () => {
               ))}
             </div>
           </div>
+
           {/* Assinatura dos Desenvolvedores */}
           <p className="text-center text-xs text-primary-foreground/80 mt-6">
             Desenvolvido por{" "}
             <a
-              href="https://bryanmdev-portfolio.netlify.app/"
+              href="URL_DO_SEU_PORTFOLIO"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-primary-foreground hover:underline"
             >
-              Bryan M.
+              Bryan M. Dev
             </a>
-            {" "}&{" "}
+            {" "}e{" "}
             <a
-              href="URL_DO_PORTFOLIO"
+              href="URL_DO_PORTFOLIO_DO_SEU_COLEGA"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-primary-foreground hover:underline"
             >
-              Marcus F.
+              Nome do Seu Colega
             </a>
           </p>
         </div>
