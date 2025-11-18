@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Lgpd from "./pages/Lgpd"; // Importação da nova página
+import Lgpd from "./pages/Lgpd"; // Importação da nova página lgpd e politica de privacidade
+import Catalog from "./pages/Catalog"; // Pagina catalogo de produtos
 
 const queryClient = new QueryClient();
 
@@ -18,8 +19,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           
-          {/* Agora essa rota vai funcionar porque o arquivo Lgpd.tsx está seguro */}
           <Route path="/lgpd" element={<Lgpd />} />
+
+          <Route path="/catalogo" element={<Catalog />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
