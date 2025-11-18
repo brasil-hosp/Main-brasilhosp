@@ -153,16 +153,16 @@ const Footer = () => {
               rel="noopener noreferrer"
               className="font-medium text-primary-foreground hover:underline"
             >
-              Bryan M. Dev
+              Bryan M
             </a>
-            {" "}e{" "}
+            {" "}&{" "}
             <a
               href="URL_DO_PORTFOLIO_DO_SEU_COLEGA"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-primary-foreground hover:underline"
             >
-              Nome do Seu Colega
+              Marcus F
             </a>
           </p>
         </div>
