@@ -26,19 +26,9 @@ const Services = () => {
       description: "Fornecimento de medicamentos hospitalares com certificação e rastreabilidade garantidas.",
     },
     {
-      icon: Wrench,
-      title: "Manutenção Técnica",
-      description: "Serviços de manutenção preventiva e corretiva para todos os equipamentos fornecidos.",
-    },
-    {
       icon: Truck,
       title: "Logística Especializada",
       description: "Entrega rápida e segura com controle de temperatura e rastreamento em tempo real.",
-    },
-    {
-      icon: Headphones,
-      title: "Suporte 24/7",
-      description: "Equipe técnica disponível a qualquer momento para suporte e emergências.",
     },
     {
       icon: ShieldCheck,
