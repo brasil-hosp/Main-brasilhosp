@@ -148,7 +148,7 @@ const Footer = () => {
           <p className="text-center text-xs text-primary-foreground/80 mt-6">
             Desenvolvido por{" "}
             <a
-              href="URL_DO_SEU_PORTFOLIO"
+              href="https://bryanmdev-portfolio.netlify.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-primary-foreground hover:underline"
