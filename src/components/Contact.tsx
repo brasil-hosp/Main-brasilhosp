@@ -25,7 +25,7 @@ const Contact = () => {
     setIsSending(true); // Desabilita o botão
 
     // ⚠️ URL DA API DO SHEETDB ⚠️
-    const SHEETDB_API_URL = "https://sheetdb.io/api/v1/f2muo4wsb6jc2";
+    const SHEETDB_API_URL = "https://sheetdb.io/api/v1/f2muo4wsb6jc2?=contatos";
 
     // Prepara os dados para enviar
     const dataToSend = {
