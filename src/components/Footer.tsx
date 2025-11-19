@@ -45,7 +45,7 @@ const Footer = () => {
     ],
     legal: [
       { label: "Política de Privacidade & LGPD", href: "/lgpd" }, // Link correto
-      { label: "Termos de Uso", href: "#" },
+      { label: "Termos de Uso", href: "/termos" },
     ],
   };
 
