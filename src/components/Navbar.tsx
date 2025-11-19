@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import { Menu, X, FileText } from "lucide-react"; // Adicionei FileText para o ícone do catálogo
+import { Menu, X, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
@@ -17,6 +17,10 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Lógica para definir quando o fundo branco deve aparecer
+  // Aparece se: O usuário rolou a tela OU se o menu mobile estiver aberto
+  const showBackground = isScrolled || isOpen;
 
   const scrollToSection = (id: string) => {
     if (location.pathname !== "/") {
@@ -40,7 +44,6 @@ const Navbar = () => {
     { id: "about", label: "Quem Somos" },
     { id: "services", label: "O Que Oferecemos" },
     { id: "why-us", label: "Por Que Nós" },
-    // REMOVIDO: { id: "partners", label: "Parceiros" },
     { id: "location", label: "Localização" },
     { id: "contact", label: "Contato" },
   ];
@@ -48,13 +51,14 @@ const Navbar = () => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-background/95 backdrop-blur-md shadow-md" : "bg-transparent"
+        // AQUI ESTÁ A CORREÇÃO: Usa a variável showBackground
+        showBackground ? "bg-white/95 backdrop-blur-md shadow-md" : "bg-transparent"
       }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           
-          {/* Logo (com Link para voltar ao topo) */}
+          {/* Logo */}
           <Link
             to="/"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -82,7 +86,7 @@ const Navbar = () => {
             {/* Grupo de Botões de Ação */}
             <div className="flex items-center gap-3 ml-4 pl-4 border-l border-gray-200">
               
-              {/* 1. Botão Catálogo (Novo) */}
+              {/* Botão Catálogo */}
               <Button
                 onClick={() => navigate("/catalogo")}
                 variant="outline"
@@ -92,7 +96,7 @@ const Navbar = () => {
                 Catálogo
               </Button>
 
-              {/* 2. Botão Orçamento (Existente) */}
+              {/* Botão Orçamento */}
               <Button
                 onClick={() => scrollToSection("contact")}
                 variant="default"
@@ -114,13 +118,13 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-border animate-fade-in bg-background/95 backdrop-blur-md">
+          <div className="md:hidden py-4 border-t border-gray-100 animate-fade-in bg-white">
             <div className="flex flex-col gap-4 px-2">
               {navLinks.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
-                  className="text-foreground hover:text-primary transition-colors font-medium text-left py-2 border-b border-gray-100"
+                  className="text-foreground hover:text-primary transition-colors font-medium text-left py-2 border-b border-gray-50"
                 >
                   {link.label}
                 </button>
