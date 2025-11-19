@@ -9,7 +9,6 @@ const WhyUs = () => {
     "Equipe técnica altamente qualificada e treinada",
     "Logística eficiente com entregas em todo o território nacional",
     "Preços competitivos com condições de pagamento flexíveis",
-    "Suporte técnico disponível 24 horas por dia, 7 dias por semana",
     "Parcerias com os principais fabricantes mundiais",
     "Compromisso com a qualidade e segurança dos pacientes",
   ];
