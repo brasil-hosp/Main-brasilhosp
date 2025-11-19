@@ -1,22 +1,50 @@
-import { Link } from "react-router-dom"; // 1. Importamos o Link
+import { useLocation, useNavigate } from "react-router-dom"; // 1. Importamos os hooks
 import { Facebook, Instagram, Linkedin, Mail, Phone } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate(); // 2. Iniciamos a função de navegação
+  const location = useLocation();
+
+  // Função Inteligente de Navegação (Igual à do Navbar/Services)
+  const handleNavigation = (href: string) => {
+    // Se for link para página interna (ex: /catalogo ou /lgpd)
+    if (href.startsWith("/") && !href.includes("#")) {
+      navigate(href);
+      window.scrollTo(0, 0); // Sobe para o topo
+      return;
+    }
+
+    // Se for âncora (ex: /#about)
+    if (href.includes("#")) {
+      const id = href.replace("/#", "");
+      
+      if (location.pathname !== "/") {
+        navigate("/");
+        setTimeout(() => {
+          const element = document.getElementById(id);
+          if (element) element.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      } else {
+        const element = document.getElementById(id);
+        if (element) element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
 
   const footerLinks = {
     empresa: [
-      { label: "Sobre Nós", href: "/#about" },     // Ajustei para /# para funcionar da pag LGPD
+      { label: "Sobre Nós", href: "/#about" },
       { label: "Serviços", href: "/#services" },
       { label: "Localização", href: "/#location" },
     ],
     recursos: [
       { label: "Blog", href: "#" },
-      { label: "Catálogo", href: "/catalogo" },
+      { label: "Catálogo", href: "/catalogo" }, // Link correto
       { label: "Certificações", href: "#" },
     ],
     legal: [
-      { label: "Política de Privacidade & LGPD", href: "/lgpd" },
+      { label: "Política de Privacidade & LGPD", href: "/lgpd" }, // Link correto
       { label: "Termos de Uso", href: "#" },
     ],
   };
@@ -32,19 +60,17 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           
-          {/* Brand Column (Coluna da Marca) */}
+          {/* Brand Column */}
           <div className="lg:col-span-2">
-            
-            {/* 2. AQUI ESTÁ A MÁGICA: Link que leva para Home e sobe ao topo */}
-            <Link 
-              to="/" 
-              className="inline-block group"
-              onClick={() => window.scrollTo(0, 0)} // <--- ISSO FORÇA SUBIR AO TOPO
+            {/* Logo como Botão */}
+            <button 
+              onClick={() => handleNavigation("/")}
+              className="inline-block group text-left"
             >
               <h3 className="text-2xl font-bold mb-4 group-hover:opacity-80 transition-opacity">
                 Brasil Hosp
               </h3>
-            </Link>
+            </button>
 
             <p className="text-primary-foreground/80 mb-6 leading-relaxed">
               Fornecendo soluções de excelência para o setor de saúde brasileiro há mais de 15 anos.
@@ -54,7 +80,6 @@ const Footer = () => {
                 <Phone size={18} />
                 <span>(98) 3227-1116</span>
               </a>
-              {/* Link do E-mail corrigido */}
               <a href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=contato@brasil-hosp.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors">
                 <Mail size={18} />
                 <span>contato@brasil-hosp.com</span>
@@ -62,65 +87,32 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Links Columns */}
-          <div>
-            <h4 className="font-bold mb-4">Empresa</h4>
-            <ul className="space-y-2">
-              {footerLinks.empresa.map((link, index) => (
-                <li key={index}>
-                  <a
-                    href={link.href}
-                    className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold mb-4">Recursos</h4>
-            <ul className="space-y-2">
-              {footerLinks.recursos.map((link, index) => (
-                <li key={index}>
-                  <a
-                    href={link.href}
-                    className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold mb-4">Legal</h4>
-            <ul className="space-y-2">
-              {footerLinks.legal.map((link, index) => (
-                <li key={index}>
-                   {/* Lógica para usar Link se for interno (/lgpd) */}
-                   {link.href.startsWith("/") ? (
-                    <Link
-                      to={link.href}
-                      onClick={() => window.scrollTo(0, 0)}
-                      className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+          {/* Colunas de Links */}
+          {[
+            { title: "Empresa", items: footerLinks.empresa },
+            { title: "Recursos", items: footerLinks.recursos },
+            { title: "Legal", items: footerLinks.legal }
+          ].map((col, idx) => (
+            <div key={idx}>
+              <h4 className="font-bold mb-4">{col.title}</h4>
+              <ul className="space-y-2">
+                {col.items.map((link, index) => (
+                  <li key={index}>
+                    {/* AQUI ESTÁ A MUDANÇA PRINCIPAL:
+                       Usamos um <button> que chama handleNavigation, igual ao Services 
+                    */}
+                    <button
+                      onClick={() => handleNavigation(link.href)}
+                      className="text-primary-foreground/80 hover:text-primary-foreground transition-colors text-left"
                     >
                       {link.label}
-                    </Link>
-                  ) : (
-                    <a
-                      href={link.href}
-                      className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                    >
-                      {link.label}
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
         </div>
 
         {/* Bottom Bar */}
