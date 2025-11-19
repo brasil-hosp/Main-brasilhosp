@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Lgpd from "./pages/Lgpd"; // Importação da nova página lgpd e politica de privacidade
 import Catalog from "./pages/Catalog"; // Pagina catalogo de produtos
+import Admin from "./pages/Admin"; // pagina admin
 
 const queryClient = new QueryClient();
 
@@ -18,11 +19,14 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          
+
           <Route path="/lgpd" element={<Lgpd />} />
 
           <Route path="/catalogo" element={<Catalog />} />
-          
+
+          {/* Nova Rota Admin */}
+          <Route path="/admin" element={<Admin />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
