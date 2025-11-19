@@ -78,7 +78,7 @@ const Terms = () => {
               <div className="bg-muted/30 p-6 rounded-lg border-l-4 border-secondary">
                 <h2 className="text-xl font-bold text-primary mb-2">7. Contato e Foro</h2>
                 <p>
-                  Para dúvidas sobre estes termos, entre em contato pelo e-mail <a href="mailto:contato@brasil-hosp.com" className="text-secondary hover:underline">contato@brasil-hosp.com</a> ou telefone (98) 3227-1116.
+                  Para dúvidas sobre estes termos, entre em contato pelo e-mail <a href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=contato@brasil-hosp.com" className="text-secondary hover:underline">contato@brasil-hosp.com</a> ou telefone (98) 3227-1116.
                 </p>
                 <p className="mt-4 text-sm">
                   Fica eleito o foro da comarca de São Luís, Maranhão, para dirimir quaisquer dúvidas oriundas deste termo.
@@ -94,5 +94,6 @@ const Terms = () => {
     </div>
   );
 };
+
 
 export default Terms;
