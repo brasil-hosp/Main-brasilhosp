@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import Lgpd from "./pages/Lgpd"; // Importação da nova página lgpd e politica de privacidade
 import Catalog from "./pages/Catalog"; // Pagina catalogo de produtos
 import Admin from "./pages/Admin"; // pagina admin
+import Terms from "./pages/Terms"; // Importação da nova página de termos de uso
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,8 @@ const App = () => (
 
           {/* Nova Rota Admin */}
           <Route path="/admin" element={<Admin />} />
+
+          <Route path="/termos" element={<Terms />} /> 
 
           <Route path="*" element={<NotFound />} />
         </Routes>
