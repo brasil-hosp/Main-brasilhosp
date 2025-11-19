@@ -1,4 +1,4 @@
-import { Monitor, Pill, Wrench, Truck, Headphones, ShieldCheck, FileText } from "lucide-react";
+import { Monitor, Pill, Truck, ShieldCheck, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,7 @@ import Autoplay from "embla-carousel-autoplay";
 const Services = () => {
   const navigate = useNavigate();
 
+  // 1. Sua lista original de 4 serviços
   const services = [
     {
       icon: Monitor,
@@ -37,6 +38,10 @@ const Services = () => {
     },
   ];
 
+  // 2. O TRUQUE: Triplicamos a lista para garantir que o loop seja suave
+  // Isso cria uma lista com 12 itens, suficiente para rodar infinitamente sem "pular"
+  const displayServices = [...services, ...services, ...services];
+
   return (
     <section id="services" className="py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -44,11 +49,11 @@ const Services = () => {
         {/* Cabeçalho da Seção */}
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            Nossos Serviços
+            Nossas Soluções
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-8" />
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Soluções integradas que vão desde o fornecimento de insumos básicos até suporte técnico especializado.
+            Soluções integradas que vão desde o fornecimento de insumos básicos até equipamentos de alta complexidade.
           </p>
         </div>
 
@@ -57,23 +62,25 @@ const Services = () => {
           <Carousel
             opts={{
               align: "start",
-              loop: true,
+              loop: true, // O Loop agora vai funcionar perfeito
             }}
             plugins={[
               Autoplay({
-                delay: 4000,
-                stopOnInteraction: true,
+                delay: 3000, // Ajustei para 3s para ficar mais dinâmico
+                stopOnInteraction: false,
+                stopOnMouseEnter: true,
               }),
             ]}
             className="w-full"
           >
             <CarouselContent className="-ml-4">
-              {services.map((service, index) => (
+              {/* 3. Usamos a lista 'displayServices' (a triplicada) aqui */}
+              {displayServices.map((service, index) => (
                 <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
                   <div className="h-full p-1">
                     <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 duration-300 flex flex-col">
                       <CardHeader className="pt-8">
-                        {/* 👇 AQUI ESTÁ A MUDANÇA: VOLTEI O DEGRADÊ 👇 */}
+                        {/* Ícone com degradê */}
                         <div className="w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mb-4 text-white shadow-md">
                           <service.icon size={28} />
                         </div>
