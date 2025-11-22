@@ -6,18 +6,27 @@ import { Card, CardContent } from "@/components/ui/card";
 
 // (O seu array de parceiros continua o mesmo)
 const partners = [
-  { name: "Partner A", logo: "/partners/airela.png" },
+  { name: "Partner A", logo: "/partners/cristalia.png" },
   { name: "Partner B", logo: "/partners/geolab.png" },
-  { name: "Partner C", logo: "/partners/medix.png" },
+  { name: "Partner C", logo: "/partners/blau.png" },
   { name: "Partner D", logo: "/partners/mercur.png" },
-  { name: "Partner E", logo: "/partners/microdont.png" },
-  { name: "Partner F", logo: "/partners/montserrat.png" },
-  { name: "Partner G", logo: "/partners/nativita.png" },
-  { name: "Partner H", logo: "/partners/pharlab.png" },
+  { name: "Partner E", logo: "/partners/texcare.png" },
+  { name: "Partner F", logo: "/partners/descarbox.png" },
+  { name: "Partner G", logo: "/partners/farmace.png" },
+  { name: "Partner H", logo: "/partners/fersenius.png" },
   { name: "Partner I", logo: "/partners/prati.png" },
-  { name: "Partner J", logo: "/partners/texcare.png" },
+  { name: "Partner J", logo: "/partners/golgran.png" },
   { name: "Partner K", logo: "/partners/unitec.png" },
-  { name: "Partner L", logo: "/partners/vitamedic.png" },
+  { name: "Partner L", logo: "/partners/gtech.png" },
+  { name: "Partner M", logo: "/partners/hidrolight.png" },
+  { name: "Partner N", logo: "/partners/hipolabor.png" },
+  { name: "Partner O", logo: "/partners/maquira.png" },
+  { name: "Partner P", logo: "/partners/sr.png" },
+  { name: "Partner Q", logo: "/partners/ss.png" },
+  { name: "Partner R", logo: "/partners/teuto.png" },
+  { name: "Partner S", logo: "/partners/tkl.png" },
+  { name: "Partner T", logo: "/partners/uc.png" },
+  { name: "Partner U", logo: "/partners/venosan.png" },
 ];
 
 const Partners = () => {
