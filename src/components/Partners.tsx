@@ -1,10 +1,7 @@
-// src/components/ui/Partners.tsx (ou onde você o salvou)
-
 import React from "react";
 import Marquee from "react-fast-marquee"; // 1. Importa o 'Marquee'
 import { Card, CardContent } from "@/components/ui/card";
 
-// (O seu array de parceiros continua o mesmo)
 const partners = [
   { name: "Partner A", logo: "/partners/cristalia.png" },
   { name: "Partner B", logo: "/partners/geolab.png" },
@@ -13,7 +10,7 @@ const partners = [
   { name: "Partner E", logo: "/partners/texcare.png" },
   { name: "Partner F", logo: "/partners/descarbox.png" },
   { name: "Partner G", logo: "/partners/farmace.png" },
-  { name: "Partner H", logo: "/partners/fersenius.png" },
+  { name: "Partner H", logo: "/partners/fesenius.png" },
   { name: "Partner I", logo: "/partners/prati.png" },
   { name: "Partner J", logo: "/partners/golgran.png" },
   { name: "Partner K", logo: "/partners/unitec.png" },
@@ -80,5 +77,6 @@ const Partners = () => {
     </section>
   );
 };
+
 
 export default Partners;
