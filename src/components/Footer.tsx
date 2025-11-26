@@ -68,7 +68,7 @@ const Footer = () => {
               className="inline-block group text-left"
             >
               <h3 className="text-2xl font-bold mb-4 group-hover:opacity-80 transition-opacity">
-                Brasil Hosp
+                BRASIL HOSP
               </h3>
             </button>
 
