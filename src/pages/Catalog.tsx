@@ -8,7 +8,7 @@ import { Search, Filter, MessageCircle, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 const categories = [
-  "Todos", "Medicamentos", "Descartáveis", "Equipamentos", "Ortopedia", "Mobiliário", "Odontologia", "Cuidados e Bem-Estar"
+  "Todos", "Medicamentos", "Descartáveis", "Equipamentos", "Ortopedia", "Odontologia", "Cuidados e Bem-Estar"
 ];
 
 interface Product {
@@ -157,5 +157,6 @@ const Catalog = () => {
     </div>
   );
 };
+
 
 export default Catalog;
