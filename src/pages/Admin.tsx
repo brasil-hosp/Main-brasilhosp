@@ -9,7 +9,7 @@ import { Trash2, RefreshCw, Search, Filter, ArrowUpDown, Pencil, X } from "lucid
 import Papa from "papaparse";
 
 const categories = [
-  "Medicamentos", "Descartáveis", "Equipamentos", "Ortopedia", "Mobiliário", "Odontologia", "Cuidados e Bem-Estar"
+  "Medicamentos", "Descartáveis", "Equipamentos", "Ortopedia", "Odontologia", "Cuidados e Bem-Estar"
 ];
 
 interface Product {
@@ -319,4 +319,5 @@ const Admin = () => {
     </div>
   );
 };
+
 export default Admin;
