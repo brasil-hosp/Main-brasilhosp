@@ -9,12 +9,14 @@ import Lgpd from "./pages/Lgpd"; // Importação da nova página lgpd e politica
 import Catalog from "./pages/Catalog"; // Pagina catalogo de produtos
 import Admin from "./pages/Admin"; // pagina admin
 import Terms from "./pages/Terms"; // Importação da nova página de termos de uso
+import { CartProvider } from "./context/CartContext"; // Implementando o contexto do carrinho de compras
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <CartProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
@@ -33,6 +35,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      </CartProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
