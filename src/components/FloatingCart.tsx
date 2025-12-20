@@ -13,7 +13,7 @@ const FloatingCart = () => {
 
   const handleFinalize = () => {
     // Gera a mensagem para o WhatsApp
-    let message = "*Olá! Gostaria de cotar o seguinte orçamento:*\n\n";
+    let message = "*Olá! Gostaria de uma cotação dos seguinte itens:*\n\n";
     items.forEach((item) => {
       message += `- ${item.quantity}x ${item.name}\n`;
     });
@@ -105,5 +105,6 @@ const FloatingCart = () => {
     </>
   );
 };
+
 
 export default FloatingCart;
