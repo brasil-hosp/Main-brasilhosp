@@ -6,6 +6,9 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, MessageCircle, Loader2, ChevronRight, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useCart } from "@/context/CartContext";
+import FloatingCart from "@/components/FloatingCart";
+import { ShoppingCart } from "lucide-react";
 
 const categories = [
   "Todos", "Medicamentos", "Descartáveis", "Equipamentos", "Ortopedia", "Mobiliário", "Odontologia", "Cuidados e Bem-Estar"
@@ -181,6 +184,7 @@ const Catalog = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const { addToCart } = useCart(); // Pegar a função de adicionar ao carrinho
 
   const SHEETDB_PRODUCTS_URL = "https://sheetdb.io/api/v1/f2muo4wsb6jc2?sheet=catalogo";
 
@@ -398,11 +402,15 @@ const Catalog = () => {
                       </CardContent>
                       <CardFooter className="pt-0 mt-2">
                         <Button 
-                          className="w-full bg-green-600 hover:bg-green-700 gap-2 shadow-sm"
-                          onClick={() => handleWhatsAppClick(product.name)}
-                        >
-                          <MessageCircle size={18} /> Cotar
-                        </Button>
+  className="w-full bg-blue-600 hover:bg-blue-700 gap-2 shadow-sm"
+  onClick={() => {
+    addToCart({ id: product.id, name: product.name, quantity: 1 });
+    // Opcional: Mostrar um toast de confirmação
+    // toast({ title: "Adicionado!", description: `${product.name} no carrinho.` });
+  }}
+>
+  <ShoppingCart size={18} /> Adicionar
+</Button>
                       </CardFooter>
                     </Card>
                   ))}
@@ -421,6 +429,7 @@ const Catalog = () => {
           </div>
         </div>
       </main>
+      <FloatingCart />
       <Footer />
     </div>
   );
