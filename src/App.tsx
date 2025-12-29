@@ -10,6 +10,7 @@ import Catalog from "./pages/Catalog"; // Pagina catalogo de produtos
 import Admin from "./pages/Admin"; // pagina admin
 import Terms from "./pages/Terms"; // Importação da nova página de termos de uso
 import { CartProvider } from "./context/CartContext"; // Implementando o contexto do carrinho de compras
+import Login from "./pages/Login"; // Página de login para admin
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,8 @@ const App = () => (
 
           {/* Nova Rota Admin */}
           <Route path="/admin" element={<Admin />} />
+
+          <Route path="/login" element={<Login />} />
 
           <Route path="/termos" element={<Terms />} /> 
 
