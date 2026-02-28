@@ -74,7 +74,7 @@ const ProductDetail = () => {
             <div className="min-h-screen flex flex-col bg-gray-50">
                 <Navbar />
                 <div className="flex-grow flex flex-col items-center justify-center p-4">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-4">Produto não encontrado</h1>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Produto não encontrado</h2>
                     <Link to="/catalogo">
                         <Button>Voltar ao Catálogo</Button>
                     </Link>
