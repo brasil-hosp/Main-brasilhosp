@@ -141,7 +141,7 @@ const Footer = () => {
           <p className="text-center text-xs text-primary-foreground/80 mt-6">
             Desenvolvido por{" "}
             <a
-              href="https://portfolio-bryandev.vecel.app/"
+              href="https://portfolio-bryandev.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-primary-foreground hover:underline"
