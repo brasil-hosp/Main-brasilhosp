@@ -181,7 +181,7 @@ const SignUp = () => {
       if (error) throw error;
 
       if (authData.user) {
-        const updates: any = {};
+        const updates: Record<string, string> = {};
         const uid = authData.user.id;
 
         if (userType === 'PJ') {
@@ -206,8 +206,9 @@ const SignUp = () => {
       toast({ title: "Sucesso!", description: "Cadastro enviado para análise." });
       navigate("/entrar");
 
-    } catch (error: any) {
-      toast({ variant: "destructive", title: "Erro", description: error.message });
+    } catch (error) {
+      const err = error as Error;
+      toast({ variant: "destructive", title: "Erro", description: err.message });
     } finally {
       setLoading(false);
     }
@@ -215,7 +216,7 @@ const SignUp = () => {
 
   const prevStep = () => setStep(prev => prev - 1);
 
-  const FileInput = ({ label, file, setFile }: { label: string, file: File | null, setFile: any }) => (
+  const FileInput = ({ label, file, setFile }: { label: string, file: File | null, setFile: (file: File | null) => void }) => (
     <div className="space-y-2 border p-3 rounded-lg bg-gray-50/50">
       <label className="text-xs font-bold uppercase text-gray-600">{label}</label>
       <div className="relative">

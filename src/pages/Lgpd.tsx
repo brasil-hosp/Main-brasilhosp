@@ -2,8 +2,8 @@ import { useEffect } from "react";
 
 // ⚠️ MANTENHA OS IMPORTS QUE JÁ ESTÃO FUNCIONANDO NO SEU ARQUIVO!
 // (Navbar e Footer que você copiou do Index.tsx)
-import Navbar from "@/components/Navbar"; 
-import Footer from "@/components/Footer"; 
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const Lgpd = () => {
   useEffect(() => {
@@ -17,7 +17,7 @@ const Lgpd = () => {
       <main className="flex-grow pt-20">
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4 max-w-4xl">
-            
+
             {/* Cabeçalho */}
             <div className="mb-12 text-center">
               <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
@@ -31,7 +31,7 @@ const Lgpd = () => {
 
             {/* Conteúdo do Texto */}
             <div className="space-y-8 text-foreground/80 leading-relaxed text-justify">
-              
+
               {/* 1. Introdução */}
               <div className="bg-card p-8 rounded-xl shadow-sm border border-border/50">
                 <h2 className="text-2xl font-bold text-secondary mb-4">1. Introdução</h2>
@@ -49,7 +49,7 @@ const Lgpd = () => {
                 <ul className="list-disc list-inside mt-2 ml-4 space-y-1 text-muted-foreground">
                   <li><strong>Dados de Identificação:</strong> Nome completo.</li>
                   <li><strong>Contato:</strong> E-mail e número de telefone.</li>
-                  <li><strong>Corporativo:</strong> Nome da empresa em que trabalha (para clientes B2B).</li>
+                  <li><strong>Corporativo:</strong> Nome da empresa em que trabalha (para clientes PJ).</li>
                 </ul>
               </div>
 
@@ -94,8 +94,8 @@ const Lgpd = () => {
                 </ul>
               </div>
 
-               {/* 6. Cookies */}
-               <div>
+              {/* 6. Cookies */}
+              <div>
                 <h2 className="text-2xl font-bold text-primary mb-3">6. Política de Cookies</h2>
                 <p className="mb-2">Utilizamos cookies para melhorar sua experiência e o desempenho do site:</p>
                 <ul className="list-disc list-inside mt-2 ml-4 space-y-1 text-muted-foreground">

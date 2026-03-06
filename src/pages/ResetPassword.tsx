@@ -71,11 +71,12 @@ const ResetPassword = () => {
             await supabase.auth.signOut();
             navigate("/entrar");
 
-        } catch (error: any) {
+        } catch (error) {
+            const err = error as Error;
             toast({
                 variant: "destructive",
                 title: "Erro ao atualizar senha",
-                description: error.message || "Tente solicitar a redefinição novamente.",
+                description: err.message || "Tente solicitar a redefinição novamente.",
             });
         } finally {
             setLoading(false);

@@ -35,7 +35,7 @@ const Login = () => {
       if (error) throw error;
       navigate("/admin");
 
-    } catch (error: any) {
+    } catch (error) {
       toast({
         variant: "destructive",
         title: "Erro no acesso",

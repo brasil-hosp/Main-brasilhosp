@@ -74,7 +74,7 @@ const ClientLogin = () => {
 
       toast({ title: "Bem-vindo!", description: "Login realizado com sucesso." });
 
-    } catch (error: any) {
+    } catch (error) {
       toast({
         variant: "destructive",
         title: "Credenciais inválidas",

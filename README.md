@@ -1,73 +1,59 @@
-# Welcome to your Lovable project
+# 🏥 Brasil Hosp Site: Portal Institucional e Catálogo
 
-## Project info
+> **Status:** Em Produção | **Arquitetura:** SPA React (Frontend) + Supabase (Backend/Auth) | **Design:** Premium Corporate Identity
 
-**URL**: https://lovable.dev/projects/f5db8f45-9b93-4e3c-ba29-5a7d6c405c9b
+## 🎯 O Problema
+Apresentar as soluções, estrutura e o catálogo de produtos da Brasil Hosp de forma moderna, responsiva, e com elementos de design de alto padrão (Premium), transmitindo confiança e tecnologia para clientes do setor da saúde.
 
-## How can I edit this code?
+## 💡 A Solução: Brasil Hosp Site
+Uma plataforma web completa e veloz que serve como portal da empresa, oferecendo a apresentação dos serviços (Locação, Manutenção, Calibração, Engenharia Clínica) e um catálogo interativo de equipamentos médicos-hospitalares, com suporte a orçamentos e painel administrativo. 
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🏗️ Arquitetura de Software
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f5db8f45-9b93-4e3c-ba29-5a7d6c405c9b) and start prompting.
+O sistema adota uma arquitetura em duas camadas (Frontend SPA e Backend as a Service):
 
-Changes made via Lovable will be committed automatically to this repo.
+1. **Frontend (`React + Vite + TypeScript`)**: Interface de usuário rica, construída com Tailwind CSS e shadcn/ui. Foco na acessibilidade e velocidade.
+2. **State & Data Management (`TanStack Query`)**: Gerenciamento de estado de servidor e cache eficiente, entregando dados atualizados.
+3. **Backend & Auth (`Supabase`)**: Banco de dados PostgreSQL com API auto-gerada, autenticação nativa e regras de segurança (RLS - Row Level Security).
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🛠️ Stack Tecnológico
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+| Camada | Tecnologias Principais |
+| :--- | :--- |
+| **Frontend** | React, Vite, TypeScript, Tailwind CSS, shadcn-ui, Lucide (Icons) |
+| **Roteamento** | React Router DOM |
+| **Backend / DB** | Supabase (PostgreSQL, Auth, Storage) |
+| **Data Fetching**| TanStack Query (@tanstack/react-query) |
+| **Componentes** | Radix UI |
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🚀 Guia de Uso (Deploy Local)
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Pré-requisitos
+- Node.js e npm (ou nvm) instalados
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Instalação
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/brasil-hosp/Main-brasilhosp.git
+   cd Main-brasilhosp
+   ```
 
-**Edit a file directly in GitHub**
+2. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+3. **Inicie o Servidor de Desenvolvimento:**
+   ```bash
+   npm run dev
+   ```
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/f5db8f45-9b93-4e3c-ba29-5a7d6c405c9b) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+4. **Acesse:**
+   - **Frontend:** `http://localhost:8080` (A porta exata aparecerá no terminal, padrão Vite)

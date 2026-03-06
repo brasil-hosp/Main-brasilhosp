@@ -5,13 +5,14 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Loader2, ChevronRight, ChevronLeft, X, ShoppingCart } from "lucide-react";
+import { Search, Filter, Loader2, ChevronRight, ChevronLeft, X, ShoppingCart, Heart, Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/context/CartContext";
 import FloatingCart from "@/components/FloatingCart";
 import { Link } from "react-router-dom";
 import Fuse from 'fuse.js';
+import { useFavorites } from "@/hooks/useFavorites";
 
 // 👇 IMPORTAÇÃO DO SUPABASE
 import { supabase } from "@/lib/supabase";
@@ -40,6 +41,9 @@ interface SidebarFiltersProps {
   availableSubcategories: string[];
   setShowMobileFilters: (val: boolean) => void;
   enableHoverEffects?: boolean;
+  canSeeMedicamentos: boolean;
+  showFavoritesOnly: boolean;
+  setShowFavoritesOnly: (val: boolean) => void;
 }
 
 const SidebarFilters = ({
@@ -51,11 +55,23 @@ const SidebarFilters = ({
   setActiveSubcategory,
   availableSubcategories,
   setShowMobileFilters,
-  enableHoverEffects = false
+  enableHoverEffects = false,
+  canSeeMedicamentos,
+  showFavoritesOnly,
+  setShowFavoritesOnly
 }: SidebarFiltersProps) => {
+  const { toast } = useToast();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   const toggleCategory = (cat: string) => {
+    if (cat === "Medicamentos" && !canSeeMedicamentos) {
+      toast({ title: "Acesso Restrito", description: "Apenas contas PJ verificadas podem acessar a categoria de Medicamentos.", variant: "destructive" });
+      return;
+    }
+
+    // Ao clicar em uma categoria, desativamos o filtro de favoritos para evitar conflitos
+    setShowFavoritesOnly(false);
+
     if (activeCategory === cat && cat !== "Todos") {
       setActiveCategory("Todos");
       setActiveSubcategory("Todos");
@@ -67,6 +83,9 @@ const SidebarFilters = ({
   };
 
   const toggleSubcategory = (sub: string) => {
+    // Ao clicar em uma subcategoria, desativamos o filtro de favoritos
+    setShowFavoritesOnly(false);
+
     if (activeSubcategory === sub && sub !== "Todos") {
       setActiveSubcategory("Todos");
     } else {
@@ -94,26 +113,55 @@ const SidebarFilters = ({
         <h3 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
           <Filter size={18} /> Categorias
         </h3>
+        <button
+          onClick={() => {
+            const newStatus = !showFavoritesOnly;
+            setShowFavoritesOnly(newStatus);
+            // Se ativou favoritos, limpamos os filtros de categoria para mostrar todos os favoritos
+            if (newStatus) {
+              setActiveCategory("Todos");
+              setActiveSubcategory("Todos");
+            }
+            setShowMobileFilters(false);
+          }}
+          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 flex items-center justify-between mb-2
+            ${showFavoritesOnly ? 'bg-red-50 text-red-700 font-bold shadow-sm border border-red-100' : 'text-gray-600 hover:bg-gray-100'}
+          `}
+        >
+          <div className="flex items-center gap-2">
+            <Heart size={16} className={showFavoritesOnly ? "fill-red-500 text-red-500" : "text-gray-400"} />
+            Meus Favoritos
+          </div>
+          {showFavoritesOnly && <ChevronRight size={14} className="text-red-500 opacity-70" />}
+        </button>
+
         <div className="flex flex-col gap-1 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
           {categories.map((cat) => {
             const isActive = activeCategory === cat;
             const isHovered = hoveredItem === cat;
-            const showX = isActive && cat !== "Todos" && isHovered && enableHoverEffects;
+            const isRestricted = cat === "Medicamentos" && !canSeeMedicamentos;
 
             return (
               <button
                 key={cat}
-                onClick={() => toggleCategory(cat)}
                 onMouseEnter={() => enableHoverEffects && setHoveredItem(cat)}
                 onMouseLeave={() => enableHoverEffects && setHoveredItem(null)}
-                className={`text-left px-3 py-2 rounded-md text-sm transition-all flex justify-between items-center w-full ${isActive ? "bg-primary text-white font-medium shadow-sm" : "text-gray-600 hover:bg-gray-100 hover:text-primary"
-                  }`}
+                onClick={() => toggleCategory(cat)}
+                className={`
+                  text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 flex items-center justify-between
+                  ${isActive ? 'bg-blue-50 text-blue-700 font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-100'}
+                  ${enableHoverEffects && isHovered && !isActive ? 'translate-x-1' : ''}
+                  ${isRestricted ? 'opacity-70' : ''}
+                `}
               >
-                {cat}
-                {showX ? <X size={16} className="animate-in zoom-in duration-200" /> :
-                  isActive && cat !== "Todos" ? <ChevronRight size={14} className="opacity-50" /> : <ChevronRight size={14} className="text-gray-300" />}
+                <div className="flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full transition-all ${isActive ? 'bg-blue-600 scale-100' : 'bg-transparent scale-0'}`} />
+                  {cat}
+                </div>
+                {isRestricted && <Lock size={14} className="text-gray-400" />}
+                {!isRestricted && isActive && <ChevronRight size={14} className="text-blue-500 opacity-70" />}
               </button>
-            );
+            )
           })}
         </div>
       </div>
@@ -158,35 +206,48 @@ const Catalog = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [canSeeMedicamentos, setCanSeeMedicamentos] = useState(false);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const ITEMS_PER_PAGE = 40;
 
   const { addToCart } = useCart();
+  const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { toast } = useToast();
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    fetchProducts();
+    checkAuthAndFetchProducts();
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = showMobileFilters ? "hidden" : "auto";
-  }, [showMobileFilters]);
-
-  const fetchProducts = async () => {
+  const checkAuthAndFetchProducts = async () => {
     setIsLoading(true);
     try {
-      // Busca tudo. O banco já deve ter os dados, mesmo os com campos vazios.
-      const { data, error } = await supabase.from('products').select('*').range(0, 9999);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase.from('profiles').select('user_type, is_verified').eq('id', session.user.id).single();
+        if (profile && (profile.user_type === 'ADMIN' || (profile.user_type === 'PJ' && profile.is_verified))) {
+          setCanSeeMedicamentos(true);
+        }
+      }
 
+      const { data, error } = await supabase.from('products').select('*').range(0, 9999);
       if (error) throw error;
       setProducts(data || []);
     } catch (error) {
-      console.error("Erro ao buscar produtos:", error);
+      console.error("Erro ao buscar produtos or auth:", error);
       toast({ title: "Erro", description: "Não foi possível carregar os produtos.", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    document.body.style.overflow = showMobileFilters ? "hidden" : "auto";
+  }, [showMobileFilters]);
+
+  useEffect(() => {
+    document.body.style.overflow = showMobileFilters ? "hidden" : "auto";
+  }, [showMobileFilters]);
 
   // 1. Gera lista de subcategorias, ignorando as nulas/vazias para não criar botões vazios
   const uniqueSubcategories = Array.from(new Set(
@@ -214,17 +275,27 @@ const Catalog = () => {
   const filteredProducts = useMemo(() => {
     let result = products;
 
-    // A) Busca Inteligente
+    // A) Filtro de Favoritos
+    if (showFavoritesOnly) {
+      result = result.filter(product => favorites.includes(product.id));
+    }
+
+    // B) Busca Inteligente
     if (searchTerm.trim() !== "") {
       const fuseResults = fuse.search(searchTerm);
       result = fuseResults.map(res => res.item);
     }
 
-    // B) Filtros de Categoria
+    // C) Filtros de Categoria
     return result.filter(product => {
       // Normaliza para evitar erros se vier null do banco
       const prodCategory = product.category || "";
       const prodSubcategory = product.subcategory || "";
+
+      // Bloqueia medicamentos silenciosamente se não tiver permissão
+      if (prodCategory === "Medicamentos" && !canSeeMedicamentos) {
+        return false;
+      }
 
       const matchesCategory = activeCategory === "Todos" || prodCategory === activeCategory;
 
@@ -234,12 +305,12 @@ const Catalog = () => {
 
       return matchesCategory && matchesSubcategory;
     });
-  }, [products, searchTerm, activeCategory, activeSubcategory, fuse]);
+  }, [products, searchTerm, activeCategory, activeSubcategory, fuse, canSeeMedicamentos, showFavoritesOnly, favorites]);
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, activeCategory, activeSubcategory]);
+  }, [searchTerm, activeCategory, activeSubcategory, showFavoritesOnly]);
 
   // PAGINAÇÃO
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
@@ -255,10 +326,12 @@ const Catalog = () => {
 
   // Helpers Mobile
   const toggleCategoryParent = (cat: string) => {
+    setShowFavoritesOnly(false);
     if (activeCategory === cat && cat !== "Todos") { setActiveCategory("Todos"); setActiveSubcategory("Todos"); }
     else { setActiveCategory(cat); setActiveSubcategory("Todos"); }
   };
   const toggleSubcategoryParent = (sub: string) => {
+    setShowFavoritesOnly(false);
     if (activeSubcategory === sub && sub !== "Todos") { setActiveSubcategory("Todos"); }
     else { setActiveSubcategory(sub); }
   };
@@ -271,7 +344,7 @@ const Catalog = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-8 items-start">
             <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-28 bg-white p-5 rounded-xl shadow-sm border border-gray-100 max-h-[85vh] overflow-y-auto custom-scrollbar">
-              <SidebarFilters searchTerm={searchTerm} setSearchTerm={setSearchTerm} activeCategory={activeCategory} setActiveCategory={setActiveCategory} activeSubcategory={activeSubcategory} setActiveSubcategory={setActiveSubcategory} availableSubcategories={availableSubcategories} setShowMobileFilters={setShowMobileFilters} enableHoverEffects={false} />
+              <SidebarFilters searchTerm={searchTerm} setSearchTerm={setSearchTerm} activeCategory={activeCategory} setActiveCategory={setActiveCategory} activeSubcategory={activeSubcategory} setActiveSubcategory={setActiveSubcategory} availableSubcategories={availableSubcategories} setShowMobileFilters={setShowMobileFilters} enableHoverEffects={false} canSeeMedicamentos={canSeeMedicamentos} showFavoritesOnly={showFavoritesOnly} setShowFavoritesOnly={setShowFavoritesOnly} />
             </aside>
             <div className="lg:hidden w-full mb-4 sticky top-20 z-40 bg-gray-50 py-2 shadow-sm lg:shadow-none">
               <div className="flex gap-2">
@@ -294,8 +367,20 @@ const Catalog = () => {
                     <h2 className="text-xl font-bold text-primary flex items-center gap-2"><Filter size={20} /> Filtros</h2>
                     <Button variant="ghost" size="icon" onClick={() => setShowMobileFilters(false)} className="rounded-full hover:bg-gray-100"><X size={24} /></Button>
                   </div>
-                  <SidebarFilters searchTerm={searchTerm} setSearchTerm={setSearchTerm} activeCategory={activeCategory} setActiveCategory={setActiveCategory} activeSubcategory={activeSubcategory} setActiveSubcategory={setActiveSubcategory} availableSubcategories={availableSubcategories} setShowMobileFilters={setShowMobileFilters} enableHoverEffects={true} />
-                  <div className="mt-8 pb-8"><Button className="w-full bg-primary" onClick={() => setShowMobileFilters(false)}>Ver Resultados</Button></div>
+                  <SidebarFilters
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    activeCategory={activeCategory}
+                    setActiveCategory={setActiveCategory}
+                    activeSubcategory={activeSubcategory}
+                    setActiveSubcategory={setActiveSubcategory}
+                    availableSubcategories={availableSubcategories}
+                    setShowMobileFilters={setShowMobileFilters}
+                    enableHoverEffects={true}
+                    canSeeMedicamentos={canSeeMedicamentos}
+                    showFavoritesOnly={showFavoritesOnly}
+                    setShowFavoritesOnly={setShowFavoritesOnly}
+                  />    <div className="mt-8 pb-8"><Button className="w-full bg-primary" onClick={() => setShowMobileFilters(false)}>Ver Resultados</Button></div>
                 </div>
               </div>
             )}
@@ -321,14 +406,22 @@ const Catalog = () => {
                             <Badge variant="outline" className="text-[10px] text-amber-700 bg-amber-50 border-amber-200">{product.subcategory}</Badge>
                           )}
                         </div>
-                        <div className="w-full h-40 flex items-center justify-center bg-gray-50 mb-3 rounded-md overflow-hidden border border-gray-100">
+                        <Link to={`/produto/${product.id}`} className="block relative h-48 bg-white flex items-center justify-center p-6 group-hover:scale-105 transition-transform duration-500">
                           {product.image_url ? (
-                            <img src={product.image_url} alt={product.name} className="max-h-full max-w-full object-contain hover:scale-105 transition-transform duration-300" />
+                            <img src={product.image_url} alt={product.name} className="max-h-full object-contain drop-shadow-sm" loading="lazy" />
                           ) : (
-                            <ImageIcon size={40} className="text-gray-300" />
+                            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center">
+                              <ImageIcon className="w-10 h-10 text-gray-300" />
+                            </div>
                           )}
-                        </div>
-                        <Link to={`/produto/${product.id}`} className="hover:underline decoration-blue-500 underline-offset-4">
+                        </Link>
+                        <button
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(product.id); }}
+                          className="absolute top-10 right-3 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:scale-110 transition-transform z-10"
+                        >
+                          <Heart size={18} className={isFavorite(product.id) ? "fill-red-500 text-red-500" : "text-gray-400"} />
+                        </button>
+                        <Link to={`/produto/${product.id}`} className="hover:underline decoration-blue-500 underline-offset-4 mt-3 block">
                           <CardTitle className="text-lg font-bold text-gray-800 leading-tight hover:text-blue-700 transition-colors cursor-pointer">{product.name}</CardTitle>
                         </Link>
                       </CardHeader>

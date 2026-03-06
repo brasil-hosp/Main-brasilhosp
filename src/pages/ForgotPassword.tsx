@@ -40,11 +40,12 @@ const ForgotPassword = () => {
                 description: "Verifique sua caixa de entrada e spam."
             });
 
-        } catch (error: any) {
+        } catch (error) {
+            const err = error as Error;
             toast({
                 variant: "destructive",
                 title: "Erro ao enviar código",
-                description: error.message || "Tente novamente mais tarde.",
+                description: err.message || "Tente novamente mais tarde.",
             });
         } finally {
             setLoading(false);
@@ -70,7 +71,7 @@ const ForgotPassword = () => {
             // Código validado! O usuário agora tem uma sessão ativa temporária de recuperação.
             setStep("NEW_PASSWORD");
 
-        } catch (error: any) {
+        } catch (error) {
             toast({
                 variant: "destructive",
                 title: "Código inválido",
@@ -109,11 +110,12 @@ const ForgotPassword = () => {
             // Deslogar para obrigar fazer login com a nova senha
             await supabase.auth.signOut();
 
-        } catch (error: any) {
+        } catch (error) {
+            const err = error as Error;
             toast({
                 variant: "destructive",
                 title: "Erro ao redefinir a senha",
-                description: error.message,
+                description: err.message,
             });
         } finally {
             setLoading(false);

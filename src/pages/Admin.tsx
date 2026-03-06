@@ -204,7 +204,7 @@ const Admin = () => {
     e.preventDefault();
     setIsSending(true);
 
-    const productData: any = {
+    const productData: Record<string, string | number> = {
       name: formData.name,
       category: formData.category,
       subcategory: formData.subcategory,
@@ -270,7 +270,7 @@ const Admin = () => {
     Papa.parse(file, {
       header: true, skipEmptyLines: true,
       complete: async (results) => {
-        const rawData = results.data as any[];
+        const rawData = results.data as Record<string, string>[];
         const formattedData = rawData.map((item, index) => ({
           id: item.id ? Number(item.id) : Date.now() + index,
           name: item.name || item.Nome || "Sem nome",
