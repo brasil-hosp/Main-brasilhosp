@@ -1,7 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Substitua com os dados que estão em Settings > API no site do Supabase
-const SUPABASE_URL = "https://vpwsofbuuhemfodanjuv.supabase.co"; 
-const SUPABASE_ANON_KEY = "sb_publishable_fZSWhMQ8bKaKZp4mEMneQw_NmXV7yGC";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  throw new Error('Variáveis de ambiente do Supabase não configuradas. Verifique o arquivo .env');
+}
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

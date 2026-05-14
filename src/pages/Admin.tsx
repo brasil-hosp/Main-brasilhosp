@@ -10,7 +10,7 @@ import Navbar from "@/components/Navbar";
 import {
   Trash2, RefreshCw, Search, Pencil, X, LogOut, LayoutDashboard,
   ListFilter, Upload, Users, CheckCircle, Building2, User, Loader2,
-  Shield, UserPlus, AlertTriangle, Eye, MapPin, FileText, Phone, Mail, Download, Save, Image as ImageIcon
+  Shield, UserPlus, AlertTriangle, Eye, MapPin, FileText, Phone, Mail, Download, Save, Image as ImageIcon, ShoppingCart
 } from "lucide-react";
 import Papa from "papaparse";
 import { supabase } from "@/lib/supabase";
@@ -18,71 +18,24 @@ import { Badge } from "@/components/ui/badge";
 
 // 👇 Importação do Dashboard (Componente externo)
 import DashboardOverview from "@/components/admin/DashboardOverview";
+import OrderManager from "@/components/admin/OrderManager";
 
-const categories = [
-  "Medicamentos", "Descartáveis", "Equipamentos", "Ortopedia", "Odontologia", "Cuidados e Bem-Estar"
-];
-
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  subcategory?: string;
-  description: string;
-  image_url?: string;
-}
-
-interface Profile {
-  id: string;
-  full_name: string;
-  user_type: "PF" | "PJ" | "ADMIN";
-  document: string;
-  email?: string;
-  phone: string;
-  is_verified: boolean;
-  created_at: string;
-  // Campos PJ
-  legal_nature?: string;
-  municipal_inscription?: string;
-  company_name?: string;
-  fantasy_name?: string;
-  ie?: string;
-  financial_contact_name?: string;
-  financial_contact_phone?: string;
-  financial_contact_email?: string;
-  // URLs dos Documentos
-  cnpj_card_url?: string;
-  qsa_url?: string;
-  social_contract_url?: string;
-  operating_permit_url?: string;
-  sanitary_medication_url?: string;
-  sanitary_cosmetics_url?: string;
-  sanitary_health_url?: string;
-  sanitary_sanitizing_url?: string;
-  // PF
-  rg_url?: string;
-  address_proof_url?: string;
-  // Endereço
-  cep?: string;
-  address?: string;
-  address_number?: string;
-  neighborhood?: string;
-  city?: string;
-  state?: string;
-  complement?: string;
-}
+// Hooks, Services e Types
+import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { productService } from "@/services/productService";
+import { profileService } from "@/services/profileService";
+import { CATALOG_CATEGORIES } from "@/constants/categories";
+import type { Product } from "@/types/product";
+import type { Profile } from "@/types/profile";
 
 const Admin = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // --- ESTADOS ---
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const { isAuthenticated, isChecking: isCheckingAuth, currentUserId, logout: handleLogout } = useAdminAuth();
   const [isSending, setIsSending] = useState(false);
   const [isLoadingList, setIsLoadingList] = useState(false);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "clients" | "admins">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "clients" | "admins" | "orders">("dashboard");
 
   // Dados
   const [products, setProducts] = useState<Product[]>([]);
@@ -104,7 +57,7 @@ const Admin = () => {
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
-    name: "", category: categories[0], subcategory: "", description: "", image_url: "",
+    name: "", category: CATALOG_CATEGORIES[1], subcategory: "", description: "", image_url: "",
   });
   const [productImageFile, setProductImageFile] = useState<File | null>(null);
 
@@ -112,68 +65,24 @@ const Admin = () => {
 
   // --- 1. SEGURANÇA E AUTH ---
   useEffect(() => {
-    checkUser();
-  }, []);
-
-  const checkUser = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (!session) {
-        navigate("/login");
-        return;
-      }
-
-      setCurrentUserId(session.user.id);
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('user_type')
-        .eq('id', session.user.id)
-        .single();
-
-      if (profile && (profile.user_type === 'PF' || profile.user_type === 'PJ')) {
-        toast({
-          variant: "destructive",
-          title: "Acesso Negado",
-          description: "Área restrita apenas para administradores."
-        });
-        navigate("/");
-        return;
-      }
-
-      setIsAuthenticated(true);
+    if (isAuthenticated) {
       fetchAllProducts();
       fetchProfiles();
-
-    } catch (error) {
-      console.error("Erro na verificação:", error);
-      navigate("/login");
-    } finally {
-      setIsCheckingAuth(false);
     }
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/login");
-  };
+  }, [isAuthenticated]);
 
   // --- 2. BUSCAR DADOS ---
   const fetchAllProducts = async () => {
     setIsLoadingList(true);
     try {
-      const { data, error } = await supabase.from('products').select('*').range(0, 9999);
-      if (error) throw error;
-      setProducts(data || []);
+      const data = await productService.getAll();
+      setProducts(data);
     } catch (error) { console.error(error); } finally { setIsLoadingList(false); }
   };
 
   const fetchProfiles = async () => {
     try {
-      const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
-      const allProfiles = data || [];
+      const allProfiles = await profileService.getAll();
       setProfiles(allProfiles);
       setAdmins(allProfiles.filter(p => p.user_type === 'ADMIN'));
     } catch (error) { console.error("Erro ao buscar clientes", error); }
@@ -195,7 +104,7 @@ const Admin = () => {
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setFormData({ name: "", category: categories[0], subcategory: "", description: "", image_url: "" });
+    setFormData({ name: "", category: CATALOG_CATEGORIES[1], subcategory: "", description: "", image_url: "" });
     setProductImageFile(null);
     if (imageInputRef.current) imageInputRef.current.value = '';
   };
@@ -227,16 +136,14 @@ const Admin = () => {
       }
 
       if (editingId) {
-        const { error } = await supabase.from('products').update(productData).eq('id', editingId);
-        if (error) throw error;
+        await productService.update(editingId, productData);
         toast({ title: "Atualizado!", description: "Produto editado com sucesso." });
         handleCancelEdit();
       } else {
-        const newProduct = { id: Date.now(), ...productData };
-        const { error } = await supabase.from('products').insert([newProduct]);
-        if (error) throw error;
+        const newProduct = { ...productData };
+        await productService.create(newProduct as Omit<Product, 'id'>);
         toast({ title: "Sucesso!", description: "Produto adicionado." });
-        setFormData({ name: "", category: categories[0], subcategory: "", description: "", image_url: "" });
+        setFormData({ name: "", category: CATALOG_CATEGORIES[1], subcategory: "", description: "", image_url: "" });
         setProductImageFile(null);
         if (imageInputRef.current) imageInputRef.current.value = '';
       }
@@ -252,8 +159,7 @@ const Admin = () => {
   const handleDeleteProduct = async (id: number) => {
     if (!window.confirm("Tem certeza que deseja excluir este item?")) return;
     try {
-      const { error } = await supabase.from('products').delete().eq('id', id);
-      if (error) throw error;
+      await productService.remove(id);
       toast({ title: "Excluído", description: "Produto removido." });
       fetchAllProducts();
     } catch (error) {
@@ -280,12 +186,12 @@ const Admin = () => {
           image_url: null
         }));
 
-        const { error } = await supabase.from('products').insert(formattedData);
-        if (error) {
-          toast({ title: "Erro na importação", description: error.message, variant: "destructive" });
-        } else {
+        try {
+          await productService.bulkInsert(formattedData);
           toast({ title: "Importado!", description: `${formattedData.length} itens importados.` });
           fetchAllProducts();
+        } catch (error: any) {
+          toast({ title: "Erro na importação", description: error.message, variant: "destructive" });
         }
         setIsSending(false);
       }
@@ -317,8 +223,7 @@ const Admin = () => {
   // --- 4. CLIENTES & ADMIN ACTIONS ---
   const toggleVerification = async (profileId: string, currentStatus: boolean) => {
     try {
-      const { error } = await supabase.from('profiles').update({ is_verified: !currentStatus }).eq('id', profileId);
-      if (error) throw error;
+      await profileService.verifyUser(profileId, !currentStatus);
       toast({ title: !currentStatus ? "Aprovado! ✅" : "Suspenso ⛔", description: "Status de acesso atualizado." });
       setProfiles(prev => prev.map(p => p.id === profileId ? { ...p, is_verified: !currentStatus } : p));
       if (selectedProfile?.id === profileId) setSelectedProfile(prev => prev ? { ...prev, is_verified: !currentStatus } : null);
@@ -353,9 +258,7 @@ const Admin = () => {
     if (!editingProfile) return;
     setIsSending(true);
     try {
-      const { error } = await supabase.from('profiles').update(clientFormData).eq('id', editingProfile.id);
-      if (error) throw error;
-
+      await profileService.update(editingProfile.id, clientFormData);
       toast({ title: "Perfil Atualizado!", description: "Dados do cliente alterados com sucesso." });
       setEditingProfile(null);
       fetchProfiles();
@@ -374,7 +277,8 @@ const Admin = () => {
       const { data: userToPromote, error: searchError } = await supabase.from('profiles').select('*').eq('email', promoteEmail).single();
       if (searchError || !userToPromote) { toast({ variant: "destructive", title: "Não encontrado" }); return; }
       if (userToPromote.user_type === 'ADMIN') { toast({ title: "Já é Admin" }); return; }
-      await supabase.from('profiles').update({ user_type: 'ADMIN', is_verified: true }).eq('id', userToPromote.id);
+      await profileService.promoteToAdmin(userToPromote.id);
+      await profileService.verifyUser(userToPromote.id, true);
       toast({ title: "Sucesso!", description: "Novo admin adicionado." });
       setPromoteEmail("");
       fetchProfiles();
@@ -385,7 +289,7 @@ const Admin = () => {
     if (adminId === currentUserId) return;
     if (!window.confirm("Remover acesso de admin?")) return;
     try {
-      await supabase.from('profiles').update({ user_type: 'PF' }).eq('id', adminId);
+      await profileService.update(adminId, { user_type: 'PF' });
       toast({ title: "Removido" });
       fetchProfiles();
     } catch (error) { toast({ variant: "destructive", title: "Erro" }); }
@@ -420,6 +324,7 @@ const Admin = () => {
         <div className="flex gap-6 mb-8 border-b border-gray-200 overflow-x-auto">
           <button onClick={() => setActiveTab("dashboard")} className={`flex items-center gap-2 pb-3 px-2 text-sm font-medium border-b-2 ${activeTab === "dashboard" ? "border-primary text-primary" : "border-transparent text-gray-500"}`}><LayoutDashboard size={20} /> Visão Geral</button>
           <button onClick={() => setActiveTab("products")} className={`flex items-center gap-2 pb-3 px-2 text-sm font-medium border-b-2 ${activeTab === "products" ? "border-primary text-primary" : "border-transparent text-gray-500"}`}><ListFilter size={20} /> Produtos</button>
+          <button onClick={() => setActiveTab("orders")} className={`flex items-center gap-2 pb-3 px-2 text-sm font-medium border-b-2 ${activeTab === "orders" ? "border-primary text-primary" : "border-transparent text-gray-500"}`}><ShoppingCart size={20} /> Pedidos</button>
           <button onClick={() => setActiveTab("clients")} className={`flex items-center gap-2 pb-3 px-2 text-sm font-medium border-b-2 ${activeTab === "clients" ? "border-primary text-primary" : "border-transparent text-gray-500"}`}><Users size={20} /> Clientes</button>
           <button onClick={() => setActiveTab("admins")} className={`flex items-center gap-2 pb-3 px-2 text-sm font-medium border-b-2 ${activeTab === "admins" ? "border-primary text-primary" : "border-transparent text-gray-500"}`}><Shield size={20} /> Admins</button>
         </div>
@@ -427,6 +332,8 @@ const Admin = () => {
         {/* --- CONTEÚDO --- */}
 
         {activeTab === "dashboard" && <DashboardOverview products={products} />}
+
+        {activeTab === "orders" && <OrderManager />}
 
         {activeTab === "products" && (
           <div className="grid md:grid-cols-2 gap-8 animate-in fade-in duration-300">
@@ -453,7 +360,7 @@ const Admin = () => {
                       <div className="w-1/2 space-y-1">
                         <label className="text-xs font-semibold text-gray-500 uppercase">Categoria</label>
                         <select className="flex h-10 w-full rounded-md border px-3 bg-background" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
-                          {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                          {CATALOG_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                         </select>
                       </div>
                       <div className="w-1/2 space-y-1">
@@ -518,7 +425,7 @@ const Admin = () => {
                   <div className="flex gap-2">
                     <select className="h-9 border rounded px-2 w-1/3 text-xs bg-white" value={filterCategory} onChange={e => { setFilterCategory(e.target.value); setFilterSubcategory("Todas") }}>
                       <option value="Todas">Todas Categ.</option>
-                      {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                      {CATALOG_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                     <select className="h-9 border rounded px-2 w-1/3 text-xs bg-white" value={filterSubcategory} onChange={e => setFilterSubcategory(e.target.value)}>
                       <option value="Todas">Todos Subs</option>

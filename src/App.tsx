@@ -20,6 +20,7 @@ const ClientLogin = lazy(() => import("./pages/ClientLogin")); // Página de log
 const ClientProfile = lazy(() => import("./pages/ClientProfile"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword")); // Página de recuperação de senha
 const ResetPassword = lazy(() => import("./pages/ResetPassword")); // Página de redefinição de senha
+const OrderForm = lazy(() => import("./pages/OrderForm")); // Nova página de pedido via link
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,8 @@ const App = () => (
               <Route path="/cadastro" element={<SignUp />} />
 
               <Route path="/termos" element={<Terms />} />
+
+              <Route path="/pedido/:token" element={<OrderForm />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>

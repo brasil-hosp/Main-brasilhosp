@@ -22,7 +22,7 @@ const Contact = () => {
     e.preventDefault();
     setIsSending(true);
 
-    const SHEETDB_API_URL = "https://sheetdb.io/api/v1/f2muo4wsb6jc2?sheet=contatos";
+    const SHEETDB_API_URL = import.meta.env.VITE_SHEETDB_API_URL as string;
 
     const dataToSend = {
       ...formData,

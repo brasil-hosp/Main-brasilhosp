@@ -13,22 +13,10 @@ import FloatingCart from "@/components/FloatingCart";
 import { Link } from "react-router-dom";
 import Fuse from 'fuse.js';
 import { useFavorites } from "@/hooks/useFavorites";
-
-// 👇 IMPORTAÇÃO DO SUPABASE
 import { supabase } from "@/lib/supabase";
-
-const categories = [
-  "Todos", "Medicamentos", "Descartáveis", "Equipamentos", "Ortopedia", "Odontologia", "Cuidados e Bem-Estar"
-];
-
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  subcategory?: string | null; // Pode ser nulo
-  description?: string | null; // Pode ser nulo
-  image_url?: string | null;
-}
+import { productService } from "@/services/productService";
+import { CATALOG_CATEGORIES } from "@/constants/categories";
+import type { Product } from "@/types/product";
 
 // --- SIDEBAR ---
 interface SidebarFiltersProps {
@@ -136,7 +124,7 @@ const SidebarFilters = ({
         </button>
 
         <div className="flex flex-col gap-1 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-          {categories.map((cat) => {
+          {CATALOG_CATEGORIES.map((cat) => {
             const isActive = activeCategory === cat;
             const isHovered = hoveredItem === cat;
             const isRestricted = cat === "Medicamentos" && !canSeeMedicamentos;
@@ -224,17 +212,20 @@ const Catalog = () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const { data: profile } = await supabase.from('profiles').select('user_type, is_verified').eq('id', session.user.id).single();
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('user_type, is_verified')
+          .eq('id', session.user.id)
+          .single();
         if (profile && (profile.user_type === 'ADMIN' || (profile.user_type === 'PJ' && profile.is_verified))) {
           setCanSeeMedicamentos(true);
         }
       }
 
-      const { data, error } = await supabase.from('products').select('*').range(0, 9999);
-      if (error) throw error;
-      setProducts(data || []);
+      const data = await productService.getAll();
+      setProducts(data);
     } catch (error) {
-      console.error("Erro ao buscar produtos or auth:", error);
+      console.error("Erro ao buscar produtos ou auth:", error);
       toast({ title: "Erro", description: "Não foi possível carregar os produtos.", variant: "destructive" });
     } finally {
       setIsLoading(false);
@@ -406,7 +397,7 @@ const Catalog = () => {
                             <Badge variant="outline" className="text-[10px] text-amber-700 bg-amber-50 border-amber-200">{product.subcategory}</Badge>
                           )}
                         </div>
-                        <Link to={`/produto/${product.id}`} className="block relative h-48 bg-white flex items-center justify-center p-6 group-hover:scale-105 transition-transform duration-500">
+                        <Link to={`/produto/${product.id}`} className="block relative h-48 bg-white items-center justify-center p-6 group-hover:scale-105 transition-transform duration-500">
                           {product.image_url ? (
                             <img src={product.image_url} alt={product.name} className="max-h-full object-contain drop-shadow-sm" loading="lazy" />
                           ) : (

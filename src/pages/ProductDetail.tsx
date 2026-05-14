@@ -10,17 +10,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/context/CartContext";
 import FloatingCart from "@/components/FloatingCart";
 import { supabase } from "@/lib/supabase";
+import { productService } from "@/services/productService";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useFavorites } from "@/hooks/useFavorites";
-
-interface Product {
-    id: number;
-    name: string;
-    category: string;
-    subcategory?: string | null;
-    description?: string | null;
-    image_url?: string | null;
-}
+import type { Product } from "@/types/product";
 
 const ProductDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -41,25 +34,24 @@ const ProductDetail = () => {
         setIsLoading(true);
         try {
             if (!id) return;
-            const { data, error } = await supabase
-                .from('products')
-                .select('*')
-                .eq('id', id)
-                .single();
 
-            if (error) throw error;
+            const data = await productService.getById(id);
+            if (!data) throw new Error('Produto não encontrado');
 
-            // Verificação de Restrição
+            // Restriction check for Medicamentos category
             if (data.category === 'Medicamentos') {
                 const { data: { session } } = await supabase.auth.getSession();
                 let canSee = false;
                 if (session) {
-                    const { data: profile } = await supabase.from('profiles').select('user_type, is_verified').eq('id', session.user.id).single();
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('user_type, is_verified')
+                        .eq('id', session.user.id)
+                        .single();
                     if (profile && (profile.user_type === 'ADMIN' || (profile.user_type === 'PJ' && profile.is_verified))) {
                         canSee = true;
                     }
                 }
-
                 if (!canSee) {
                     setIsRestricted(true);
                     setIsLoading(false);
@@ -70,16 +62,8 @@ const ProductDetail = () => {
             setProduct(data);
 
             if (data?.category) {
-                const { data: relatedData } = await supabase
-                    .from('products')
-                    .select('*')
-                    .eq('category', data.category)
-                    .neq('id', data.id)
-                    .limit(8);
-
-                if (relatedData) {
-                    setRelatedProducts(relatedData);
-                }
+                const related = await productService.getRelated(data.category, data.id);
+                setRelatedProducts(related);
             }
         } catch (error) {
             console.error("Erro ao buscar produto:", error);
