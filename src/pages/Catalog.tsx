@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/context/CartContext";
 import FloatingCart from "@/components/FloatingCart";
 import { Link } from "react-router-dom";
-import Fuse from 'fuse.js';
+import { searchProducts } from "@/lib/productSearch";
 import { useFavorites } from "@/hooks/useFavorites";
 import { supabase } from "@/lib/supabase";
 import { productService } from "@/services/productService";
@@ -251,16 +251,7 @@ const Catalog = () => {
 
   const availableSubcategories = ["Todos", ...uniqueSubcategories];
 
-  // 2. Configura o Fuse para lidar com campos que podem não existir
-  const fuse = useMemo(() => {
-    return new Fuse(products, {
-      keys: ['name', 'description', 'category', 'subcategory'],
-      threshold: 0.3,
-      ignoreLocation: true,
-      includeScore: true,
-      // Se um campo for nulo, o Fuse ignora e não quebra
-    });
-  }, [products]);
+  // 2. (busca por tokens — nome + specs + categoria — vive em lib/productSearch)
 
   // 3. Lógica de Filtro ROBUSTA
   const filteredProducts = useMemo(() => {
@@ -271,11 +262,8 @@ const Catalog = () => {
       result = result.filter(product => favorites.includes(product.id));
     }
 
-    // B) Busca Inteligente
-    if (searchTerm.trim() !== "") {
-      const fuseResults = fuse.search(searchTerm);
-      result = fuseResults.map(res => res.item);
-    }
+    // B) Busca por tokens (nome + descrição/specs + categoria) — mesma do modal do pedido
+    result = searchProducts(result, searchTerm);
 
     // C) Filtros de Categoria
     return result.filter(product => {
@@ -296,7 +284,7 @@ const Catalog = () => {
 
       return matchesCategory && matchesSubcategory;
     });
-  }, [products, searchTerm, activeCategory, activeSubcategory, fuse, canSeeMedicamentos, showFavoritesOnly, favorites]);
+  }, [products, searchTerm, activeCategory, activeSubcategory, canSeeMedicamentos, showFavoritesOnly, favorites]);
 
   // Reset page when filters change
   useEffect(() => {
