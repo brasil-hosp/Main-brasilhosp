@@ -147,6 +147,14 @@ const SignUp = () => {
   // --- SUBMIT ---
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (userType === 'PF') {
+      if (!formData.fullName) { toast({ variant: "destructive", title: "Atenção", description: "Nome completo obrigatório." }); return; }
+      if (!formData.document || formData.document.length < 14) { toast({ variant: "destructive", title: "Atenção", description: "CPF inválido." }); return; }
+      if (!formData.phone) { toast({ variant: "destructive", title: "Atenção", description: "WhatsApp obrigatório." }); return; }
+      if (!formData.email) { toast({ variant: "destructive", title: "Atenção", description: "E-mail de acesso obrigatório." }); return; }
+    }
+
     if (formData.password !== formData.confirmPassword) {
       toast({ variant: "destructive", title: "Erro", description: "Senhas não conferem." }); return;
     }
@@ -234,11 +242,13 @@ const SignUp = () => {
           <CardHeader className="border-b bg-gray-50/50">
             <div className="flex justify-between items-center mb-2">
               <CardTitle className="text-xl font-bold text-blue-900">{userType === 'PJ' ? 'Cadastro Empresarial' : 'Cadastro Pessoa Física'}</CardTitle>
-              <span className="text-sm text-gray-500 font-medium">Etapa {step} de 4</span>
+              {userType === 'PJ' && <span className="text-sm text-gray-500 font-medium">Etapa {step} de 4</span>}
             </div>
+            {userType === 'PJ' && (
             <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
               <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${step * 25}%` }}></div>
             </div>
+            )}
           </CardHeader>
 
           <CardContent className="pt-6">
@@ -253,10 +263,19 @@ const SignUp = () => {
                   </div>
 
                   {userType === "PF" ? (
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-1 md:col-span-2"><label className="text-xs font-bold text-gray-600">Nome Completo *</label><Input value={formData.fullName} onChange={e => setFormData({ ...formData, fullName: e.target.value })} className="uppercase" /></div>
-                      <div className="space-y-1"><label className="text-xs font-bold text-gray-600">CPF *</label><Input value={formData.document} onChange={e => setFormData({ ...formData, document: maskDocument(e.target.value) })} maxLength={14} className="font-mono" /></div>
-                      <div className="space-y-1"><label className="text-xs font-bold text-gray-600">WhatsApp *</label><Input value={formData.phone} onChange={e => setFormData({ ...formData, phone: maskPhone(e.target.value) })} /></div>
+                    <div className="space-y-4">
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-1 md:col-span-2"><label className="text-xs font-bold text-gray-600">Nome Completo *</label><Input value={formData.fullName} onChange={e => setFormData({ ...formData, fullName: e.target.value })} className="uppercase" /></div>
+                        <div className="space-y-1"><label className="text-xs font-bold text-gray-600">CPF *</label><Input value={formData.document} onChange={e => setFormData({ ...formData, document: maskDocument(e.target.value) })} maxLength={14} className="font-mono" /></div>
+                        <div className="space-y-1"><label className="text-xs font-bold text-gray-600">WhatsApp *</label><Input value={formData.phone} onChange={e => setFormData({ ...formData, phone: maskPhone(e.target.value) })} /></div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-blue-800 font-semibold mb-2 mt-4 border-b pb-2"><Lock size={20} /> Login</div>
+                      <div className="space-y-2"><label className="text-xs font-bold text-gray-600">E-mail de Acesso *</label><Input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} placeholder="Para fazer login no site" /></div>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2 relative"><label className="text-xs font-bold text-gray-600">Senha *</label><div className="relative"><Input type={showPassword ? "text" : "password"} value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} minLength={6} /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-2 text-gray-400">{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></div>
+                        <div className="space-y-2"><label className="text-xs font-bold text-gray-600">Confirmar Senha *</label><Input type="password" value={formData.confirmPassword} onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })} /></div>
+                      </div>
                     </div>
                   ) : (
                     <>
@@ -297,7 +316,7 @@ const SignUp = () => {
               )}
 
               {/* ETAPA 2 */}
-              {step === 2 && (
+              {step === 2 && userType === "PJ" && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-1"><label className="text-xs font-bold text-gray-600">CEP *</label><Input value={formData.cep} onChange={e => setFormData({ ...formData, cep: e.target.value })} onBlur={handleCepBlur} /></div>
@@ -313,62 +332,52 @@ const SignUp = () => {
               )}
 
               {/* ETAPA 3 */}
-              {step === 3 && (
+              {step === 3 && userType === "PJ" && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
                   <div className="flex items-center gap-2 text-blue-800 font-semibold mb-2 border-b pb-2"><FileText size={20} /> Validação Documental</div>
 
-                  {userType === "PJ" ? (
-                    <>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="md:col-span-2 font-bold text-gray-700">Documentos Corporativos (Obrigatórios)</div>
-                        <FileInput label="Cartão CNPJ *" file={cnpjCardFile} setFile={setCnpjCardFile} />
-                        <FileInput label="Ato Constitutivo / Contrato Social *" file={socialContractFile} setFile={setSocialContractFile} />
-                        <FileInput label="Alvará de Funcionamento *" file={operatingPermitFile} setFile={setOperatingPermitFile} />
-                      </div>
+                  <>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2 font-bold text-gray-700">Documentos Corporativos (Obrigatórios)</div>
+                      <FileInput label="Cartão CNPJ *" file={cnpjCardFile} setFile={setCnpjCardFile} />
+                      <FileInput label="Ato Constitutivo / Contrato Social *" file={socialContractFile} setFile={setSocialContractFile} />
+                      <FileInput label="Alvará de Funcionamento *" file={operatingPermitFile} setFile={setOperatingPermitFile} />
+                    </div>
 
-                      <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg shadow-sm">
-                        <div className="font-bold text-green-800 mb-2">Alvarás Sanitários (Obrigatórios conforme Atividade)</div>
-                        <p className="text-xs text-green-700 mb-4">Anexe as Autorizações de Funcionamento de Empresa (AFE) correspondentes aos produtos que deseja adquirir.</p>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                          <div className="ring-2 ring-green-500 rounded-lg p-1">
-                            <FileInput label="AFE - Medicamentos *" file={sanitaryMedicationFile} setFile={setSanitaryMedicationFile} />
-                          </div>
-                          <FileInput label="AFE - Cosméticos" file={sanitaryCosmeticsFile} setFile={setSanitaryCosmeticsFile} />
-                          <FileInput label="AFE - Prod. Saúde" file={sanitaryHealthFile} setFile={setSanitaryHealthFile} />
-                          <FileInput label="AFE - Saneantes" file={sanitarySanitizingFile} setFile={setSanitarySanitizingFile} />
+                    <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg shadow-sm">
+                      <div className="font-bold text-green-800 mb-2">Alvarás Sanitários (Obrigatórios conforme Atividade)</div>
+                      <p className="text-xs text-green-700 mb-4">Anexe as Autorizações de Funcionamento de Empresa (AFE) correspondentes aos produtos que deseja adquirir.</p>
+                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="ring-2 ring-green-500 rounded-lg p-1">
+                          <FileInput label="AFE - Medicamentos *" file={sanitaryMedicationFile} setFile={setSanitaryMedicationFile} />
                         </div>
-                      </div>
-
-                      <div className="mt-6 border-t pt-4">
-                        <div className="flex justify-between items-center mb-4">
-                          <div className="font-bold text-blue-800">Referências Comerciais (Mín 3)</div>
-                          <Button type="button" size="sm" variant="outline" onClick={addReference}><Plus size={14} className="mr-1" /> Adicionar</Button>
-                        </div>
-
-                        {references.map((ref, index) => (
-                          <div key={index} className="grid md:grid-cols-3 gap-3 mb-3 p-3 bg-gray-50 rounded border relative">
-                            <Input placeholder="Nome da Empresa *" value={ref.name} onChange={e => updateReference(index, 'name', e.target.value)} />
-                            <Input placeholder="Telefone *" value={ref.phone} onChange={e => updateReference(index, 'phone', maskPhone(e.target.value))} />
-                            <Input placeholder="E-mail" value={ref.email} onChange={e => updateReference(index, 'email', e.target.value)} />
-                            {index >= 3 && <button type="button" onClick={() => removeReference(index)} className="absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full p-1"><Trash2 size={12} /></button>}
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="space-y-4">
-                      <p className="text-sm text-gray-600 mb-2">Para compras no cartão de crédito, a identificação é obrigatória.</p>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <FileInput label="RG ou CNH (Frente e Verso) *" file={rgFile} setFile={setRgFile} />
-                        <FileInput label="Comprovante de Endereço *" file={addressProofFile} setFile={setAddressProofFile} />
+                        <FileInput label="AFE - Cosméticos" file={sanitaryCosmeticsFile} setFile={setSanitaryCosmeticsFile} />
+                        <FileInput label="AFE - Prod. Saúde" file={sanitaryHealthFile} setFile={setSanitaryHealthFile} />
+                        <FileInput label="AFE - Saneantes" file={sanitarySanitizingFile} setFile={setSanitarySanitizingFile} />
                       </div>
                     </div>
-                  )}
+
+                    <div className="mt-6 border-t pt-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <div className="font-bold text-blue-800">Referências Comerciais (Mín 3)</div>
+                        <Button type="button" size="sm" variant="outline" onClick={addReference}><Plus size={14} className="mr-1" /> Adicionar</Button>
+                      </div>
+
+                      {references.map((ref, index) => (
+                        <div key={index} className="grid md:grid-cols-3 gap-3 mb-3 p-3 bg-gray-50 rounded border relative">
+                          <Input placeholder="Nome da Empresa *" value={ref.name} onChange={e => updateReference(index, 'name', e.target.value)} />
+                          <Input placeholder="Telefone *" value={ref.phone} onChange={e => updateReference(index, 'phone', maskPhone(e.target.value))} />
+                          <Input placeholder="E-mail" value={ref.email} onChange={e => updateReference(index, 'email', e.target.value)} />
+                          {index >= 3 && <button type="button" onClick={() => removeReference(index)} className="absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full p-1"><Trash2 size={12} /></button>}
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 </div>
               )}
 
               {/* ETAPA 4 */}
-              {step === 4 && (
+              {step === 4 && userType === "PJ" && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
                   <div className="flex items-center gap-2 text-blue-800 font-semibold mb-2"><Lock size={20} /> Login</div>
                   <div className="space-y-2"><label className="text-xs font-bold text-gray-600">E-mail de Acesso *</label><Input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} placeholder="Para fazer login no site" /></div>
@@ -380,8 +389,12 @@ const SignUp = () => {
               )}
 
               <div className="flex justify-between pt-6 border-t">
-                {step > 1 ? <Button type="button" variant="outline" onClick={prevStep}><ChevronLeft size={16} className="mr-2" /> Voltar</Button> : <div />}
-                {step < 4 ? <Button type="button" className="bg-blue-600 hover:bg-blue-700 font-bold" onClick={handleNextStep}>Próxima Etapa <ChevronRight size={16} className="ml-2" /></Button> : <Button type="submit" className="bg-green-600 hover:bg-green-700 font-bold px-8 shadow-lg" disabled={loading}>{loading ? <Loader2 className="animate-spin mr-2" /> : "FINALIZAR CADASTRO"}</Button>}
+                {step > 1 && userType === "PJ" ? <Button type="button" variant="outline" onClick={prevStep}><ChevronLeft size={16} className="mr-2" /> Voltar</Button> : <div />}
+                {userType === "PF" || step === 4 ? (
+                  <Button type="submit" className="bg-green-600 hover:bg-green-700 font-bold px-8 shadow-lg" disabled={loading}>{loading ? <Loader2 className="animate-spin mr-2" /> : "FINALIZAR CADASTRO"}</Button>
+                ) : (
+                  <Button type="button" className="bg-blue-600 hover:bg-blue-700 font-bold" onClick={handleNextStep}>Próxima Etapa <ChevronRight size={16} className="ml-2" /></Button>
+                )}
               </div>
             </form>
           </CardContent>
