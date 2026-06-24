@@ -13,26 +13,25 @@ export const orderService = {
   },
 
   async getByToken(token: string): Promise<Order | null> {
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*, items:order_items(*)')
-      .eq('token', token)
-      .single();
-    
-    if (error && error.code !== 'PGRST116') throw error;
-    return data;
+    // Leitura escopada ao token via RPC SECURITY DEFINER.
+    // (SELECT direto em orders é admin-only — RLS lockdown.)
+    const { data, error } = await supabase.rpc('get_order_by_token', { p_token: token });
+    if (error) throw error;
+    return (data as Order) ?? null;
   },
 
   async create(order: Partial<Order>, items: Partial<OrderItem>[] = []): Promise<Order> {
     const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     
-    const { data: newOrder, error: orderError } = await supabase
+    // Insert sem .select() (anon não tem SELECT direto em orders pós-lockdown);
+    // carrega o pedido recém-criado via RPC pelo token.
+    const { error: orderError } = await supabase
       .from('orders')
-      .insert({ ...order, token })
-      .select()
-      .single();
-      
+      .insert({ ...order, token });
     if (orderError) throw orderError;
+
+    const newOrder = await this.getByToken(token);
+    if (!newOrder) throw new Error('Falha ao carregar o pedido recém-criado.');
 
     if (items.length > 0) {
       const clean = items.filter(i => i.product_name?.trim()).map(i => ({
