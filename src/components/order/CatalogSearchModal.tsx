@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { X, Search, Plus, Loader2, Image as ImageIcon, ChevronDown } from "lucide-react";
 import { productService } from "@/services/productService";
 import { searchProducts } from "@/lib/productSearch";
@@ -79,7 +78,7 @@ export default function CatalogSearchModal({ onClose, onAddItem }: CatalogSearch
         </div>
 
         {/* Results */}
-        <ScrollArea className="flex-1">
+        <div className="flex-1 overflow-y-auto min-w-0">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="animate-spin text-primary" size={32} />
@@ -108,7 +107,7 @@ export default function CatalogSearchModal({ onClose, onAddItem }: CatalogSearch
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm text-gray-800 truncate">{product.name}</p>
-                        <div className="flex gap-1 mt-0.5 items-center">
+                        <div className="flex gap-1 mt-0.5 items-center min-w-0 overflow-hidden">
                           <Badge variant="outline" className="text-[10px] h-4 px-1">{product.category}</Badge>
                           {product.subcategory && <Badge variant="outline" className="text-[10px] h-4 px-1 bg-yellow-50">{product.subcategory}</Badge>}
                         </div>
@@ -125,7 +124,7 @@ export default function CatalogSearchModal({ onClose, onAddItem }: CatalogSearch
                         value={quantities[product.id] || "1"}
                         onClick={(e) => e.stopPropagation()}
                         onChange={(e) => setQuantities(prev => ({ ...prev, [product.id]: e.target.value }))}
-                        className="w-16 h-8 text-sm text-center"
+                        className="w-16 h-8 text-sm text-center shrink-0"
                         placeholder="Qtd"
                       />
                       <Button
@@ -162,7 +161,7 @@ export default function CatalogSearchModal({ onClose, onAddItem }: CatalogSearch
               })}
             </div>
           )}
-        </ScrollArea>
+        </div>
 
         {/* Footer */}
         <div className="p-3 border-t bg-gray-50 rounded-b-2xl">
